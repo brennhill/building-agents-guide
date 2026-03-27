@@ -8,9 +8,9 @@ The [Agent Production Readiness Checklist](https://github.com/brennhill/Delivery
 
 You need four things:
 
-1. **A repo** the agent will work in. Pick one. Not your monorepo. A real service with CI, tests, and a code review process.
-2. **An AI coding tool** that supports autonomous operation — Claude Code, Cursor, Codex, Goose, or similar.
-3. **CI/CD** already running on the repo. If you don't have CI, stop here and set that up first. The agent needs gates to push against.
+1. **A workspace** the agent will operate in. A repo, a data directory, a project folder — whatever the agent needs access to.
+2. **An AI agent tool** that supports autonomous operation — Claude Code, Cursor, Codex, Goose, or similar.
+3. **An output review process.** For coding agents, this means CI/CD. For other agents, this means whatever validation pipeline checks the agent's output before it has real-world effect.
 4. **2-3 hours** of uninterrupted time. This is infrastructure work, not a quick install.
 
 If you're missing any of these, fix that first. The checklist assumes they exist.
@@ -22,10 +22,10 @@ If you're missing any of these, fix that first. The checklist assumes they exist
 Teams get this backwards. They install the agent, let it run, then bolt on security after the first incident. Do it the other way:
 
 1. **Sandbox** — build the container the agent will run in. No network, no host access, no privilege escalation. The agent doesn't exist yet. You're building the box it will live in.
-2. **Permissions** — set up credential management. The agent will need to push branches and create PRs. It should never see the credentials that make that possible.
+2. **Permissions** — set up credential management. The agent will need to interact with external systems. It should never see the credentials that make that possible.
 3. **Behavioral boundaries** — configure what the agent can and cannot do. Tool allowlists, protected paths, read-only configuration files.
 4. **Observability** — set up logging that streams outside the container. You need to see everything the agent does, and the agent can't touch the logs.
-5. **Gates** — CI runs on every agent PR. Branch protection prevents direct pushes. Human review is required.
+5. **Gates** — Automated checks run on every agent output. The agent cannot publish or deploy directly. Human review is required.
 6. **Kill switch** — you can stop the agent in under 60 seconds. Two people know how.
 7. **The agent** — now you install and configure the agent inside the harness you just built.
 
