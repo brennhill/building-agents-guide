@@ -18,10 +18,10 @@ This is not theory. Every recommendation is backed by a real incident where the 
 ### [Attack & Risk Index](attack-risk-index.md)
 Every risk an autonomous agent poses, explained in depth. For each: what the attack is, a real incident, the defense, the test, and common mistakes. This is the reference encyclopedia behind the [Agent Production Readiness Checklist](https://github.com/brennhill/Delivery-Gap-Toolkit/blob/main/quality-correctness-gates/agent-production-checklist.md).
 
-### How to Use the Checklist *(coming soon)*
+### [How to Use the Checklist](how-to-use-the-checklist.md)
 The on-ramp. You just cloned a repo, you want to run an autonomous agent — here's the order of operations.
 
-### How to Build an Agent Harness *(coming soon)*
+### [How to Build an Agent Harness](how-to-build-an-agent-harness.md)
 Step-by-step from zero to a running sandboxed agent submitting PRs through gates with full observability.
 
 ## Related
