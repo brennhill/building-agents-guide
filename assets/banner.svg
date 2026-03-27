@@ -1,0 +1,220 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400">
+  <defs>
+    <!-- Blue gradient for good side -->
+    <linearGradient id="goodBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a2744"/>
+      <stop offset="100%" stop-color="#0f1a2e"/>
+    </linearGradient>
+    <!-- Red gradient for bad side -->
+    <linearGradient id="badBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2e1111"/>
+      <stop offset="100%" stop-color="#1a0808"/>
+    </linearGradient>
+    <!-- Glow effects -->
+    <filter id="blueGlow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="redGlow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="eyeGlow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- === LEFT SIDE: GOOD ROBOT === -->
+  <rect x="0" y="0" width="600" height="400" fill="url(#goodBg)"/>
+
+  <!-- Subtle grid pattern -->
+  <g opacity="0.05" stroke="#4a9eff">
+    <line x1="0" y1="80" x2="600" y2="80" stroke-width="0.5"/>
+    <line x1="0" y1="160" x2="600" y2="160" stroke-width="0.5"/>
+    <line x1="0" y1="240" x2="600" y2="240" stroke-width="0.5"/>
+    <line x1="0" y1="320" x2="600" y2="320" stroke-width="0.5"/>
+    <line x1="120" y1="0" x2="120" y2="400" stroke-width="0.5"/>
+    <line x1="240" y1="0" x2="240" y2="400" stroke-width="0.5"/>
+    <line x1="360" y1="0" x2="360" y2="400" stroke-width="0.5"/>
+    <line x1="480" y1="0" x2="480" y2="400" stroke-width="0.5"/>
+  </g>
+
+  <!-- Good robot body -->
+  <g transform="translate(180, 80)">
+    <!-- Antenna -->
+    <line x1="60" y1="0" x2="60" y2="25" stroke="#4a9eff" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="60" cy="0" r="6" fill="#4a9eff" filter="url(#blueGlow)"/>
+
+    <!-- Head -->
+    <rect x="20" y="25" width="80" height="65" rx="12" fill="#2a4a7a" stroke="#4a9eff" stroke-width="2"/>
+    <!-- Happy eyes -->
+    <circle cx="45" cy="55" r="8" fill="#4a9eff" filter="url(#blueGlow)"/>
+    <circle cx="75" cy="55" r="8" fill="#4a9eff" filter="url(#blueGlow)"/>
+    <circle cx="45" cy="54" r="4" fill="#a0d4ff"/>
+    <circle cx="75" cy="54" r="4" fill="#a0d4ff"/>
+    <!-- Smile -->
+    <path d="M42 72 Q60 85 78 72" fill="none" stroke="#4a9eff" stroke-width="2.5" stroke-linecap="round"/>
+
+    <!-- Neck -->
+    <rect x="48" y="90" width="24" height="12" rx="3" fill="#1e3a5f"/>
+
+    <!-- Body -->
+    <rect x="10" y="102" width="100" height="90" rx="15" fill="#2a4a7a" stroke="#4a9eff" stroke-width="2"/>
+    <!-- Chest light -->
+    <circle cx="60" cy="140" r="12" fill="#1e3a5f" stroke="#4a9eff" stroke-width="1.5"/>
+    <circle cx="60" cy="140" r="6" fill="#4a9eff" opacity="0.6" filter="url(#blueGlow)"/>
+
+    <!-- Left arm holding tray -->
+    <rect x="-25" y="112" width="35" height="14" rx="7" fill="#2a4a7a" stroke="#4a9eff" stroke-width="1.5"/>
+    <!-- Hand -->
+    <circle cx="-28" cy="119" r="9" fill="#2a4a7a" stroke="#4a9eff" stroke-width="1.5"/>
+
+    <!-- Right arm (waving) -->
+    <rect x="110" y="105" width="35" height="14" rx="7" fill="#2a4a7a" stroke="#4a9eff" stroke-width="1.5" transform="rotate(-30, 110, 112)"/>
+    <circle cx="148" cy="98" r="9" fill="#2a4a7a" stroke="#4a9eff" stroke-width="1.5"/>
+
+    <!-- Legs -->
+    <rect x="25" y="192" width="18" height="40" rx="6" fill="#2a4a7a" stroke="#4a9eff" stroke-width="1.5"/>
+    <rect x="77" y="192" width="18" height="40" rx="6" fill="#2a4a7a" stroke="#4a9eff" stroke-width="1.5"/>
+    <!-- Feet -->
+    <rect x="18" y="228" width="30" height="12" rx="6" fill="#2a4a7a" stroke="#4a9eff" stroke-width="1.5"/>
+    <rect x="72" y="228" width="30" height="12" rx="6" fill="#2a4a7a" stroke="#4a9eff" stroke-width="1.5"/>
+  </g>
+
+  <!-- Serving tray -->
+  <g transform="translate(112, 190)">
+    <!-- Tray surface -->
+    <ellipse cx="40" cy="12" rx="42" ry="8" fill="#3a6aaa" stroke="#4a9eff" stroke-width="1.5"/>
+    <!-- Tray items (little code blocks) -->
+    <rect x="15" y="-8" width="18" height="14" rx="2" fill="#1e3a5f" stroke="#4a9eff" stroke-width="1"/>
+    <text x="18" y="2" fill="#4a9eff" font-family="monospace" font-size="7">{}</text>
+    <rect x="38" y="-12" width="18" height="18" rx="2" fill="#1e3a5f" stroke="#4a9eff" stroke-width="1"/>
+    <text x="41" y="2" fill="#4a9eff" font-family="monospace" font-size="7">PR</text>
+    <rect x="60" y="-6" width="14" height="12" rx="2" fill="#1e3a5f" stroke="#4a9eff" stroke-width="1"/>
+    <text x="62" y="3" fill="#4a9eff" font-family="monospace" font-size="6">ok</text>
+  </g>
+
+  <!-- Green checkmark -->
+  <g transform="translate(340, 120)">
+    <circle cx="30" cy="30" r="28" fill="#0a2e0a" stroke="#22c55e" stroke-width="2.5"/>
+    <path d="M16 30 L26 40 L44 20" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Left side text -->
+  <text x="300" y="300" text-anchor="middle" fill="#4a9eff" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" letter-spacing="1">VERIFIED</text>
+  <text x="300" y="325" text-anchor="middle" fill="#6a8abf" font-family="system-ui, -apple-system, sans-serif" font-size="13" letter-spacing="0.5">sandboxed / scoped / audited</text>
+  <text x="300" y="348" text-anchor="middle" fill="#4a7aaf" font-family="system-ui, -apple-system, sans-serif" font-size="11" letter-spacing="0.5">gates / review / kill switch</text>
+
+  <!-- === DIVIDER === -->
+  <line x1="600" y1="20" x2="600" y2="380" stroke="#333" stroke-width="2"/>
+  <text x="600" y="200" text-anchor="middle" fill="#555" font-family="system-ui, sans-serif" font-size="14" font-weight="bold">vs</text>
+
+  <!-- === RIGHT SIDE: BAD ROBOT === -->
+  <rect x="600" y="0" width="600" height="400" fill="url(#badBg)"/>
+
+  <!-- Smoke / destruction haze -->
+  <g opacity="0.08">
+    <circle cx="780" cy="350" r="80" fill="#ff3333"/>
+    <circle cx="900" cy="330" r="60" fill="#ff3333"/>
+    <circle cx="1050" cy="360" r="70" fill="#ff3333"/>
+  </g>
+
+  <!-- Destroyed buildings -->
+  <g opacity="0.3" fill="#4a1111" stroke="#661111" stroke-width="1">
+    <!-- Building 1 (damaged) -->
+    <polygon points="660,380 660,260 685,250 710,260 710,380"/>
+    <rect x="670" y="280" width="8" height="8" fill="#331111"/>
+    <rect x="690" y="280" width="8" height="8" fill="#331111"/>
+    <rect x="670" y="300" width="8" height="8" fill="#331111"/>
+    <!-- Crack -->
+    <line x1="685" y1="250" x2="690" y2="290" stroke="#661111" stroke-width="1.5"/>
+    <line x1="690" y1="290" x2="683" y2="320" stroke="#661111" stroke-width="1.5"/>
+
+    <!-- Building 2 (crumbling) -->
+    <polygon points="730,380 730,230 770,220 770,300 760,300 760,380"/>
+    <rect x="740" y="250" width="8" height="8" fill="#331111"/>
+    <rect x="740" y="270" width="8" height="8" fill="#331111"/>
+
+    <!-- Building 3 (far right) -->
+    <rect x="1050" y="280" width="40" height="100" fill="#4a1111"/>
+    <polygon points="1050,280 1070,260 1090,280"/>
+    <rect x="1060" y="300" width="8" height="8" fill="#331111"/>
+    <rect x="1075" y="300" width="8" height="8" fill="#331111"/>
+    <line x1="1070" y1="260" x2="1075" y2="310" stroke="#661111" stroke-width="1.5"/>
+
+    <!-- Building 4 -->
+    <rect x="1100" y="300" width="35" height="80" fill="#4a1111"/>
+    <rect x="1108" y="320" width="7" height="7" fill="#331111"/>
+    <rect x="1120" y="320" width="7" height="7" fill="#331111"/>
+  </g>
+
+  <!-- Fire particles -->
+  <g opacity="0.4">
+    <circle cx="770" cy="300" r="3" fill="#ff6633"/>
+    <circle cx="695" cy="250" r="2" fill="#ff4422"/>
+    <circle cx="1065" cy="275" r="2.5" fill="#ff5533"/>
+    <circle cx="1110" cy="310" r="2" fill="#ff6633"/>
+    <circle cx="750" cy="220" r="2" fill="#ff4422"/>
+  </g>
+
+  <!-- Bad robot body -->
+  <g transform="translate(830, 65)">
+    <!-- Antenna (broken/bent) -->
+    <line x1="60" y1="10" x2="55" y2="30" stroke="#aa3333" stroke-width="3" stroke-linecap="round"/>
+    <line x1="55" y1="10" x2="60" y2="10" stroke="#aa3333" stroke-width="3"/>
+    <circle cx="55" cy="8" r="5" fill="#ff3333" filter="url(#redGlow)"/>
+
+    <!-- Head (angular, menacing) -->
+    <path d="M15,30 L25,25 L95,25 L105,30 L105,90 L15,90 Z" fill="#5a2222" stroke="#aa3333" stroke-width="2"/>
+    <!-- Evil red eyes -->
+    <g filter="url(#eyeGlow)">
+      <path d="M35,50 L45,45 L55,50 L45,55 Z" fill="#ff0000"/>
+      <path d="M65,50 L75,45 L85,50 L75,55 Z" fill="#ff0000"/>
+    </g>
+    <!-- Inner eye glow -->
+    <circle cx="45" cy="50" r="3" fill="#ffaaaa"/>
+    <circle cx="75" cy="50" r="3" fill="#ffaaaa"/>
+    <!-- Angry mouth -->
+    <path d="M35 75 L45 68 L55 75 L65 68 L75 75 L85 68" fill="none" stroke="#aa3333" stroke-width="2.5" stroke-linecap="round"/>
+
+    <!-- Neck -->
+    <rect x="45" y="90" width="30" height="12" rx="2" fill="#3a1515"/>
+
+    <!-- Body (bulkier, more angular) -->
+    <path d="M5,102 L115,102 L110,200 L10,200 Z" fill="#5a2222" stroke="#aa3333" stroke-width="2"/>
+    <!-- Chest warning -->
+    <polygon points="60,125 75,150 45,150" fill="none" stroke="#ff3333" stroke-width="2"/>
+    <text x="56" y="147" fill="#ff3333" font-family="system-ui, sans-serif" font-size="14" font-weight="bold">!</text>
+
+    <!-- Left arm (smashing) -->
+    <rect x="-30" y="110" width="40" height="16" rx="5" fill="#5a2222" stroke="#aa3333" stroke-width="1.5" transform="rotate(20, -10, 118)"/>
+    <path d="M-40,135 L-50,125 L-35,120 L-45,130 L-30,128" fill="#5a2222" stroke="#aa3333" stroke-width="1.5"/>
+
+    <!-- Right arm (raised, destructive) -->
+    <rect x="110" y="102" width="40" height="16" rx="5" fill="#5a2222" stroke="#aa3333" stroke-width="1.5" transform="rotate(-40, 115, 110)"/>
+    <path d="M155,80 L165,70 L150,75 L160,65 L148,72" fill="#5a2222" stroke="#aa3333" stroke-width="1.5"/>
+
+    <!-- Legs -->
+    <rect x="22" y="200" width="22" height="42" rx="4" fill="#5a2222" stroke="#aa3333" stroke-width="1.5"/>
+    <rect x="76" y="200" width="22" height="42" rx="4" fill="#5a2222" stroke="#aa3333" stroke-width="1.5"/>
+    <!-- Heavy feet -->
+    <rect x="14" y="238" width="36" height="14" rx="4" fill="#5a2222" stroke="#aa3333" stroke-width="1.5"/>
+    <rect x="70" y="238" width="36" height="14" rx="4" fill="#5a2222" stroke="#aa3333" stroke-width="1.5"/>
+  </g>
+
+  <!-- Ban icon -->
+  <g transform="translate(710, 100)">
+    <circle cx="25" cy="25" r="22" fill="none" stroke="#ff3333" stroke-width="3.5" opacity="0.8"/>
+    <line x1="9" y1="9" x2="41" y2="41" stroke="#ff3333" stroke-width="3.5" opacity="0.8"/>
+  </g>
+
+  <!-- Right side text -->
+  <text x="900" y="300" text-anchor="middle" fill="#ff4444" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" letter-spacing="1">UNVERIFIED</text>
+  <text x="900" y="325" text-anchor="middle" fill="#aa4444" font-family="system-ui, -apple-system, sans-serif" font-size="13" letter-spacing="0.5">unsandboxed / unscoped / unaudited</text>
+  <text x="900" y="348" text-anchor="middle" fill="#884444" font-family="system-ui, -apple-system, sans-serif" font-size="11" letter-spacing="0.5">DROP TABLE / rm -rf / credential theft</text>
+
+  <!-- Title bar at top -->
+  <rect x="0" y="0" width="1200" height="3" fill="#333"/>
+  <text x="600" y="388" text-anchor="middle" fill="#555" font-family="system-ui, -apple-system, sans-serif" font-size="10" letter-spacing="2">BUILDING AGENTS GUIDE</text>
+</svg>

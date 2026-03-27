@@ -1,5 +1,7 @@
 # Building Agents Guide
 
+![Good Robot vs Bad Robot — the difference is the harness](assets/banner.svg)
+
 A practical, incident-backed guide to building autonomous AI agent infrastructure safely.
 
 This is not theory. Every recommendation is backed by a real incident where the absence of that control caused damage, or by production practices from companies running agents at scale (Spotify, Stripe, Anthropic, OpenAI).
