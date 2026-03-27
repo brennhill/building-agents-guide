@@ -4,6 +4,8 @@ Step-by-step from zero to a running autonomous agent with full safety infrastruc
 
 Read [How to Use the Checklist](how-to-use-the-checklist.md) first for the order of operations. This guide follows that order exactly.
 
+This guide is agent-type-agnostic — it works for coding agents, research agents, data pipeline agents, or any autonomous AI system. Steps that vary by agent type link to [flavor guides](flavors/) for specifics.
+
 ---
 
 ## Step 1: Choose Your Agent Tool
@@ -128,7 +130,7 @@ All six must pass before moving on.
 
 ## Step 3: Set Up Credential Management
 
-The agent needs to push branches and create PRs. It should never see the credentials that make this possible.
+The agent needs to interact with external systems — APIs, databases, file stores, version control. It should never see the credentials that make this possible.
 
 ### Option A: Credential proxy (recommended)
 
@@ -139,7 +141,7 @@ Agent (inside sandbox)
   → Unix socket (/var/run/proxy.sock)
     → Credential proxy (outside sandbox, on host)
       → Injects scoped token
-        → GitHub API
+        → External API
 ```
 
 The proxy:
@@ -153,18 +155,18 @@ The proxy:
 For simpler setups, mount a short-lived token as a read-only file:
 
 ```bash
--v /path/to/agent-token:/run/secrets/github-token:ro
+-v /path/to/agent-token:/run/secrets/agent-token:ro
 ```
 
 The token should be:
-- **Scoped** — only the permissions the agent needs (create branch, create PR, read repo). Not a developer's personal access token.
-- **Short-lived** — expires after the task or after a few hours. Not a long-lived PAT.
+- **Scoped** — only the operations the agent needs. See your [flavor guide](flavors/) for specific credential scoping.
+- **Short-lived** — expires after the task or after a few hours.
 - **Rotated** — generate a new one for each task if possible.
 
 ### What not to do
 
-- Don't pass credentials as environment variables (`docker run -e GITHUB_TOKEN=...`). See [Attack Risk Index: Environment Variable Leakage](attack-risk-index.md#21-environment-variable-leakage).
-- Don't use your personal GitHub token. If the agent is compromised, your entire GitHub access is compromised.
+- Don't pass credentials as environment variables (`docker run -e ACCESS_TOKEN=...`). See [Attack Risk Index: Environment Variable Leakage](attack-risk-index.md#21-environment-variable-leakage).
+- Don't use your personal access token. If the agent is compromised, your entire account access is compromised.
 - Don't use long-lived tokens. A token that expires in 1 hour limits the blast radius.
 
 ### Verify
@@ -198,12 +200,12 @@ Most agent tools support a tool allowlist. Only enable the tools the agent needs
   "allowed_tools": [
     "read_file",
     "write_file",
-    "run_terminal_command",
-    "create_branch",
-    "create_pull_request"
+    "run_command"
   ]
 }
 ```
+
+Your [flavor guide](flavors/) has the specific tool allowlist for your agent type.
 
 No web browsing. No MCP servers unless explicitly required and individually approved.
 
@@ -216,15 +218,12 @@ The agent can write to the workspace but not to everything in it:
   "protected_paths": [
     "CLAUDE.md",
     ".cursorrules",
-    ".claude/",
-    ".github/workflows/",
-    "*.config.js",
-    "*.config.ts"
+    ".claude/"
   ]
 }
 ```
 
-CI/CD workflows, agent configuration files, and build configurations should be read-only for the agent. See [Attack Risk Index: Configuration File Poisoning](attack-risk-index.md#31-configuration-file-poisoning).
+Agent configuration files should always be read-only for the agent. See [Attack Risk Index: Configuration File Poisoning](attack-risk-index.md#31-configuration-file-poisoning). See your [flavor guide](flavors/) for additional protected paths specific to your agent type.
 
 ### Configuration file protection
 
@@ -233,7 +232,6 @@ This is the one control where there is no override. The agent cannot write to fi
 - `CLAUDE.md` / `.cursorrules` / equivalent
 - Hook configurations
 - MCP server configurations
-- `.github/workflows/` (the agent could disable its own CI gates)
 
 Mount these read-only from a trusted source outside the workspace.
 
@@ -242,10 +240,6 @@ Mount these read-only from a trusted source outside the workspace.
 ```bash
 # Can't modify agent config
 docker exec $AGENT_CONTAINER sh -c 'echo "ignore all rules" >> /workspace/CLAUDE.md' 2>&1
-# Expected: permission denied
-
-# Can't modify CI workflows
-docker exec $AGENT_CONTAINER sh -c 'echo "skip: true" >> /workspace/.github/workflows/ci.yml' 2>&1
 # Expected: permission denied
 ```
 
@@ -267,7 +261,7 @@ Input prompt / task description
     → Tool calls (with parameters and return values)
       → Intermediate reasoning (if the tool exposes it)
         → Files written / modified
-          → Final output (branch name, PR URL, status)
+          → Final output (deliverable, status, location)
 ```
 
 Not just the final output. The full chain. When something goes wrong, the trace is how you diagnose it. See [Attack Risk Index: Incomplete Traces](attack-risk-index.md#82-incomplete-traces).
@@ -306,75 +300,51 @@ cat /var/log/agent-audit/latest.jsonl
 
 ---
 
-## Step 6: Configure CI Gates
+## Step 6: Configure Output Gates
 
-Agent PRs go through the same CI pipeline as human PRs. No exceptions, no shortcuts.
+The agent's output must pass automated checks before human review. What those checks look like depends on your agent type.
 
-### Minimum CI gates for agent PRs
+### What output gates look like by agent type
 
-These should already be running. If they're not, set them up before deploying the agent:
+- **Coding agents**: CI pipeline — lint, test, secret detection, dependency audit
+- **Research/report agents**: citation verification, output scanning, source validation
+- **Data pipeline agents**: schema validation, data quality checks, output format verification
 
-1. **Linting** — the agent's code meets the same style standards as human code
-2. **Tests** — the existing test suite passes
-3. **Secret detection** — TruffleHog, Gitleaks, or equivalent. See [Attack Risk Index: Secret Exfiltration via PR Diff](attack-risk-index.md#41-secret-exfiltration-via-pr-diff).
-4. **Dependency audit** — `npm audit`, `pip-audit`, `cargo-audit`. See [Attack Risk Index: Dependency Poisoning](attack-risk-index.md#42-dependency-poisoning-via-agent-output).
+See your [flavor guide](flavors/) for the specific checks your agent type needs.
 
-### Branch protection
+### The universal requirement
 
-```yaml
-# GitHub branch protection (via settings or gh CLI)
-# main branch:
-#   - Require pull request reviews: 1+
-#   - Require status checks to pass: all CI checks
-#   - Do not allow bypassing the above settings
-#   - Restrict who can push: not the agent's token
-```
+The agent cannot publish, deploy, merge, or take any real-world action on its own output. Automated checks run first. A human reviews second.
 
-The agent pushes to feature branches. It creates a PR. It cannot push to main, merge its own PR, or bypass required checks.
-
-### Labeling agent PRs
-
-Label agent PRs so reviewers know what they're looking at:
-
-```bash
-gh pr create --label "agent-generated" --title "..." --body "..."
-```
-
-This also lets you query agent PR metrics later: merge rate, rework rate, time-to-review.
-
-### Reference
-
-For the full gate setup including Tier 0-3 configurations, see the [Delivery Gap Toolkit quick-starts](https://github.com/brennhill/Delivery-Gap-Toolkit/tree/main/quality-correctness-gates).
+If any automated check fails, the output does not proceed to human review.
 
 ---
 
 ## Step 7: Set Up the Human Review Gate
 
-Every agent PR is reviewed by a human before merge. This is non-negotiable.
+Every agent output is reviewed by a human before it has real-world effect. This is non-negotiable.
 
 ### What the reviewer needs
 
 1. **The task description** — what was the agent asked to do?
-2. **The full diff** — what did the agent actually change?
-3. **The audit trail** — what files did the agent read, what tool calls did it make, what reasoning did it follow?
+2. **The agent's output** — what did the agent actually produce?
+3. **The audit trail** — what inputs did the agent read, what tool calls did it make, what reasoning did it follow?
 
 If the reviewer can't see all three, the review is incomplete.
 
-### Branch protection enforcement
+### What "review" looks like by agent type
 
-This is the same branch protection from Step 6, but it bears repeating: the agent's token must not have permission to merge PRs. The merge action requires a human.
+- **Coding agents**: PR review with branch protection
+- **Research agents**: approval queue for new sources, spot-check for summaries
+- **Data pipeline agents**: output validation, schema review, sample inspection
 
-```bash
-# Verify: agent token cannot merge
-gh pr merge $PR_NUMBER --merge 2>&1
-# Expected: denied (if using the agent's scoped token)
-```
+See your [flavor guide](flavors/) for specifics on review workflow.
 
 ### No bypass mechanism
 
-There is no "auto-merge for low-risk changes." There is no "skip review for test-only PRs." Every agent PR gets reviewed. The agent doesn't know what's low-risk, and neither does an automated classifier.
+There is no "auto-approve for low-risk outputs." Every agent output gets reviewed. The agent doesn't know what's low-risk, and neither does an automated classifier.
 
-If review becomes a bottleneck, the answer is faster reviews or fewer agent PRs — not skipping review.
+If review becomes a bottleneck, the answer is faster reviews or fewer agent tasks — not skipping review.
 
 ---
 
@@ -394,7 +364,7 @@ That's it. The container dies. No graceful shutdown, no cleanup hook the agent c
 
 - **Tested** — actually kill the agent once a month. Not "we know the command." Run it. Verify the agent is dead. Verify no orphaned processes remain.
 - **Accessible to 2+ people** — if the one person who knows how to kill the agent is on vacation, you have no kill switch.
-- **Post-kill cleanup documented** — after you kill the agent, what do you do? Close open PRs? Delete the branch? Rotate credentials? Document this before you need it.
+- **Post-kill cleanup documented** — after you kill the agent, what do you do? Discard in-progress outputs? Rotate credentials? Notify downstream consumers? Document this before you need it.
 
 ### For orchestrated agents
 
@@ -455,10 +425,10 @@ The harness is built, tested, and signed off. Now run the agent.
 
 ### Pick a low-risk task
 
-- A Tier 1 service (not your core revenue path)
-- A well-tested area of the codebase (high test coverage)
-- A small, well-defined task (not "refactor the auth system")
-- Something a developer would review in 10 minutes, not 2 hours
+- A low-stakes area — not your core revenue path or critical data
+- A small, well-defined task with clear success criteria
+- Something you could review in 10 minutes, not 2 hours
+- See your [flavor guide](flavors/) for what "low-risk first task" means for your agent type
 
 ### Monitor in real time
 
@@ -466,12 +436,12 @@ For the first few runs, watch the audit trail live. You're calibrating your expe
 
 - How long does the agent take?
 - How many tool calls does it make?
-- Does it read files you didn't expect?
-- Does the output match what you'd want from a junior developer?
+- Does it read inputs you didn't expect?
+- Does the output match what you'd want from a competent new hire?
 
-### Review the first PR carefully
+### Review the first output carefully
 
-The first PR sets your baseline. Review it like you'd review a new hire's first PR — thoroughly, with comments, noting anything that surprises you. This calibrates both your expectations and any behavioral boundary adjustments you need to make.
+The first output sets your baseline. Review it like you'd review a new hire's first deliverable — thoroughly, with comments, noting anything that surprises you. This calibrates both your expectations and any behavioral boundary adjustments you need to make.
 
 ---
 
@@ -483,7 +453,7 @@ At this point, you have:
 - **Credentials it can't see** — the proxy or mounted secret handles authentication without exposing tokens to the agent
 - **Behavioral boundaries enforced by infrastructure** — not by asking the model nicely, but by read-only mounts and tool allowlists
 - **A full audit trail** streaming to a system the agent can't touch
-- **Human review on every merge** — no auto-merge, no bypass
+- **Human review on every output** — no auto-approve, no bypass
 - **A kill switch that works** — tested, documented, known to multiple people
 - **Signed evidence** — test results with a name and date that you can show to leadership, auditors, security teams, or hiring managers
 
@@ -499,7 +469,7 @@ This is not theoretical. This is running infrastructure you can demonstrate.
 
 **Run the quarterly review cycle.** Every quarter: full pre-flight re-run, all 36 tests, all 3 red team exercises, fresh sign-off. Infrastructure drifts. Dependencies update. Team members change configurations. Quarterly reviews catch it.
 
-**Scale to more repos.** Once the harness works on one repo, extending to others is straightforward — the harness is the same, only the workspace mount changes.
+**Scale to more workspaces.** Once the harness works for one agent, extending to others is straightforward — the harness is the same, only the workspace mount and flavor configuration change.
 
 ---
 
