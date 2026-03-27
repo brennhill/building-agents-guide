@@ -75,6 +75,12 @@ npx @anthropic-ai/sandbox-runtime -- claude -p "your task"
 
 This is simpler to set up but gives you less control over the container configuration. Good for getting started. Move to Docker when you need production-grade control.
 
+### Option C: Cloudflare Dynamic Workers (cloud-native, high-concurrency)
+
+For agents that generate and execute TypeScript/JavaScript, [Cloudflare Dynamic Workers](https://blog.cloudflare.com/dynamic-workers/) provides V8 isolate-based sandboxing. Millisecond startup (~100x faster than containers), built-in credential injection and HTTP filtering, and nearly a decade of isolate security hardening. Best for high-concurrency scenarios where each request spins up a separate sandbox — supports a million requests per second.
+
+Tradeoff: V8 isolates only run JavaScript/TypeScript. If your agent needs Python, shell access, or system-level tools, use Docker or sandbox-runtime instead.
+
 ### Sensitive file exclusion
 
 Before mounting your workspace, exclude these files. They should never be inside the agent's container:
